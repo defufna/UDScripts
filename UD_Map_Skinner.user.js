@@ -4,7 +4,6 @@
 // @version        1.1.0
 // @description    Applies images from the original Firefox UDToolbar to the UrbanDead in-game map.
 // @updateURL      https://github.com/Klexur/UDScripts/raw/master/UD_Map_Skinner.user.js
-// @grant          GM_addStyle
 // @include        http://*urbandead.com/map.cgi*
 // @exclude        http://*urbandead.com/map.cgi?logout
 // ==/UserScript==
@@ -14,13 +13,44 @@
 // This variable controls whether the GPS of the current city block show displayed next to the suburb name
 var showGPS = true;
 
+function GM_addStyle(css){
+	head = document.head || document.getElementsByTagName('head')[0],
+	style = document.createElement('style');
+
+	style.type = 'text/css';
+	style.appendChild(document.createTextNode(css));
+	head.appendChild(style);
+}
+
 addStyles();
 specialBlocks();
+
+var loc = document.querySelectorAll(".sb")[0];
+var suburb = loc.childNodes[0].textContent.replace(/ /g,"_");
+var a = document.createElement("a");
+a.href = "http://map.dssrzs.org/" + suburb;
+a.textContent = suburb;
+loc.childNodes[0].remove();
+loc.insertBefore(a, loc.firstChild);
+
+addRuined();
+
+function addRuined(){
+	for(let node of document.querySelectorAll("input.mr, input.mrl")){
+		var div = document.createElement("div");
+		div.className = "ruined";
+		var form = node.parentElement;
+		var cell = form.parentElement;    
+		cell.replaceChild(div, form);
+		div.appendChild(form);
+	}
+}
 
 function addStyles() {
 	//GM_addStyle('table.c {max-width: 300px !important; overflow: hidden !important;}');
 	//GM_addStyle('td.cp {max-width: 300px !important; overflow: hidden !important;}');
 
+	GM_addStyle(".ruined {height:100%;background: repeating-linear-gradient(  -45deg,  rgba(0,0,0,0.5),  rgba(0,0,0,0.5) 10px,  transparent 10px,  transparent 20px);}");
 	// base style for all blocks
 	GM_addStyle('td.b { \
 		height:100px !important; \
@@ -44,6 +74,8 @@ function addStyles() {
 		font-size:70% !important; \
 		line-height:1 !important; \
 	}');
+  
+	GM_addStyle('input.mr, input.mrl { border: 5px red solid;}');
 
 	// cx inside, cxr ruined, cxd dark
 	GM_addStyle('td.cx, td.cxr, td.cxd {background-image: url("data:image/gif;base64,R0lGODlhZABkALMAAHh/dhoaGmZmZklJSaeRjntZVDtkLUd8M6GIhZqfmHWdZv///8TFyioqKgAAAEhISCH5BAAAAAAALAAAAABkAGQAAAT/cCUQzFEBaGqswVQgjGRgFmiamsNgEnAsm6VQXSa47XzvAwmJY0gsGo/IpHLJbDqRk6d0Sq1WNcfHY6jter/gsHhMLpu1Sqxxyz673/A42uEtqunELl3O7/P3c0R3c36FhnJIg1uAh42OX0Vziotcj5aHgHgOd4yXnoaMggBclZ+mfZmipaesfntDaq2yoJujnbO4brC2ub1vu6u+wmHAt8PHi7HIy3MmwczCQyPP0L3SAtTVuNfZ2rJDzsbe37Xd46ewAebnn7DY4uym4O/xudzw9ZfS6vj5j9K8/LUCF1AgunL9DNJSprAdwobyHkL0VGwiRYkW/2HM2KgiR0ce/z9i2ijSFcmSf06ijBNyZUqGLhGpjHmmJc1fM2+SsanTDM+eO3MCBfNzKDGhRvUgTZqsIFMxRZ824yd1zJAW65heHZA16dauRr8m9OoA69iwZbmeHSq2KtS0YNnCXQv0KlW3RMsiiFvXQYC9dHsOQcCAr2AHhA3rHAwYb14Edx0rReBU8pAGlR1Hlbr5aWetmyJLTkZvdLPSpu+ZnmND8U2ArmkSjB3zM9lwqxdNC7zYQetXo6UZiISGs6YKefRULRLgACnlfUsR6VCJONpABvitAR0ow/bir5VqQriKdj48lFQl6RtIvZX38OM/ASK/vv37QSbcAJGBw4H/GIhAwh0IJmgQgAorBNDCgi4EIMODApZgAX8/VGghEAtEAAA7") !important;}');
