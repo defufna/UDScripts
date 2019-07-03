@@ -39,10 +39,17 @@ function addRuined(){
 	for(let node of document.querySelectorAll("input.mr, input.mrl")){
 		var div = document.createElement("div");
 		div.className = "ruined";
-		var form = node.parentElement;
-		var cell = form.parentElement;    
-		cell.replaceChild(div, form);
-		div.appendChild(form);
+		        
+		var cell = node.parentElement;    
+    while(cell.tagName != "TD"){
+      cell = cell.parentElement;
+    }
+		
+    while (cell.childNodes.length > 0) {
+    	div.appendChild(cell.childNodes[0]);
+		}
+    
+    cell.appendChild(div);		
 	}
 }
 
