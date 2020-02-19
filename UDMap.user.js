@@ -1,10 +1,10 @@
 // ==UserScript==
-// @name			UDMap
+// @name			UDMap Bromified
 // @author			Bradley Sattem (a.k.a. Aichon)
 // @namespace		http://www.aichon.com
-// @version			2.0.1
-// @updateURL		http://d.aichon.com/ud_userscripts/udmap.meta.js
-// @downloadURL		http://d.aichon.com/ud_userscripts/udmap.user.js
+// @version			1.0.1
+// @updateURL		https://github.com/defufna/UDScripts/raw/master/UDMap.user.js
+// @downloadURL		https://github.com/defufna/UDScripts/raw/master/UDMap.user.js
 // @description		Urban Dead suburb and city map ingame
 // @include			http://urbandead.com/map.cgi*
 // @include   http://urbankombat.pythonanywhere.com/*/map.cgi*
@@ -10413,7 +10413,7 @@ function directions(sx, sy, dx, dy){
 }
 
 function Search(event){
-  var search = document.querySelector("#search_input").value;
+  var search = document.querySelector("#search_input").value.toLowerCase();
   r = /\(?\[?(\d{1,2})\s*,\s*(\d{1,2})\)?\[?/;
   results = r.exec(search);
   var x = -1;
@@ -10428,7 +10428,7 @@ function Search(event){
       if(B[i]){
         for(var j = 0; j < B[i].length; j++){
           
-          if(B[i][j] && B[i][j][1].includes(search)){
+          if(B[i][j] && B[i][j][1].toLowerCase().includes(search)){
   	        x = j;
             y = i;
     	      break outer;
