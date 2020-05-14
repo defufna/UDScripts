@@ -2,7 +2,7 @@
 // @name			UDMap Bromified
 // @author			Bradley Sattem (a.k.a. Aichon)
 // @namespace		http://www.aichon.com
-// @version			1.0.1
+// @version			1.0.2
 // @updateURL		https://github.com/defufna/UDScripts/raw/master/UDMap.user.js
 // @downloadURL		https://github.com/defufna/UDScripts/raw/master/UDMap.user.js
 // @description		Urban Dead suburb and city map ingame
@@ -10384,6 +10384,13 @@ function MakeUDMapTable(suburbtable, worldtable, id)
     }
 }
 
+function cost(sx, sy, dx, dy){
+  var difX = Math.abs(dx - sx);
+  var difY = Math.abs(dy - sy);
+  
+  return Math.max(difX, difY);
+}
+
 function directions(sx, sy, dx, dy){
   console.log(sx, sy, dx, dy);
   var dif_x = dx - sx;
@@ -10423,7 +10430,7 @@ function Search(event){
     x = parseInt(results[1], 10);
     y = parseInt(results[2], 10);
   }else{
-    outer:
+    var results = [];
     for(var i = 0; i < B.length; i++){
       if(B[i]){
         for(var j = 0; j < B[i].length; j++){
@@ -10431,11 +10438,25 @@ function Search(event){
           if(B[i][j] && B[i][j][1].toLowerCase().includes(search)){
   	        x = j;
             y = i;
-    	      break outer;
+    	      results.push([x,y]);
           }
         }
+      }      
+    }
+
+    var bestIndex = 0;
+    var bestCost = cost(player.col, player.row, results[0][0], results[0][1]);
+    
+    for(var i = 1; i < results.length; i++){
+      var current = cost(player.col, player.row, results[i][0], results[i][1]);
+      if(current < bestCost){
+        bestCost = current;
+        bestIndex = i;
       }
     }
+    
+    x = results[bestIndex][0];
+    y = results[bestIndex][1];
   }
   
   if(x != -1 && y != -1){
