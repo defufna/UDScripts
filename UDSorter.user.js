@@ -2,6 +2,7 @@
 // @name		UD Item Combiner, Organizer and Sorter (forked and patched by Jack Taner)
 // @description		Combines, organizes and sorts your inventory and calculates the number of shots you have in your weapons.
 // @namespace		http://aichon.com
+// @version			1.2.4
 // @include		http://urbandead.com/map.cgi*
 // @include		http://www.urbandead.com/map.cgi*
 // @exclude		http://urbandead.com/map.cgi?logout
@@ -9,7 +10,7 @@
 // ==/UserScript==
 
 /* Urban Dead Item Combiner, Organizer and Sorter (forked and patched by Jack Tanner)
- * v1.2.3 (based on the original v1.2.2 script)
+ * v1.2.4 (based on the original v1.2.2 script)
  *
  * Copyright (c) 2020 Jack Taner -- https://github.com/Shikada
  * Copyright (C) 2014 Bradley Sattem -- bsatsjunk+uduserscripts@gmail.com
@@ -19,6 +20,8 @@
  * Released under the terms of the GNU GPL V2, which can be found at http://www.gnu.org/copyleft/gpl.html
  *
  * Changes:
+ *   1.2.4
+ *     * Click on a wasted item button now offers to drop item
  *	 1.2.3:
  *	   * added a Wasted section which shows items that waste your AP (these were hidden before), but buttons are disabled so you don't click on them by accident
  *   1.2.2:
@@ -426,6 +429,22 @@ function genSpecialRow(name) {
 	return row;
 }
 
+function dropItem(ev){
+  let answer = window.confirm("Do you want to drop " + ev.target.value + "?");
+  if(!answer){
+    return
+  }
+  
+  let items = document.querySelector("select[name='drop']");    
+  for(let item of items.options){
+    if(item.textContent.indexOf(ev.target.value) != -1){
+      item.selected = true;
+      break;
+    }
+  }
+  items.parentNode.submit();
+}
+
 function genItem(name, info, isWasted) {
 	var form = document.createElement('form');
 	form.action = 'map.cgi?' + info.command;
@@ -439,10 +458,10 @@ function genItem(name, info, isWasted) {
 	button.setAttribute('class', 'm');
 	button.setAttribute('type', 'submit');
 	button.setAttribute('value', name);
-    if (isWasted) {
-        button.setAttribute('disabled', true);
-        button.style.background = 'lightgrey';
-    }
+  if (isWasted) {
+    button.addEventListener("click", dropItem);
+    button.type = "button";
+  }
 
 	form.appendChild(button);
 
